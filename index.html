@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xtreme Aviator Predictor : 1xbet</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      text-align: center;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #e60000, #990000);
+      padding: 20px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 0 10px red;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #fff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    }
+
+    .info {
+      margin: 20px 0;
+      font-size: 18px;
+    }
+
+    .circle {
+      margin: 30px auto;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #330000, #0d0d0d);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px red;
+      color: #ffccff;
+      font-size: 16px;
+    }
+
+    .signal-box {
+      margin: 20px auto;
+      background: #990000;
+      padding: 15px;
+      border-radius: 10px;
+      width: fit-content;
+      font-size: 20px;
+      color: #fff;
+      box-shadow: 0 0 10px #ff0000;
+    }
+
+    .buttons {
+      margin: 30px auto;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .buttons a {
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .buttons .whatsapp {
+      background: #25D366;
+    }
+
+    .buttons .telegram {
+      background: #0088cc;
+    }
+
+    .buttons a:hover {
+      opacity: 0.8;
+    }
+
+    footer {
+      margin-top: 50px;
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    footer a {
+      color: #aaa;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Xtreme Aviator Predictor : 1xbet</h1>
+  </div>
+
+  <div class="info">
+    <div>Live Time: <span id="live-time"></span></div>
+    <div>Date: <span id="live-date"></span></div>
+  </div>
+
+  <div class="circle">
+    <div id="next-signal">Next Signal Loading</div>
+    <div id="countdown">Next in: 00:00</div>
+  </div>
+
+  <div class="signal-box">Odd - 5× - 7× - 10× (Risk)</div>
+
+  <div class="buttons">
+    <a href="#" class="whatsapp">WhatsApp</a>
+    <a href="#" class="telegram">Telegram</a>
+  </div>
+
+  <footer>
+    Design By: <a href="https://facebook.com/gdamith.lasantha">Damith Lasantha</a>
+  </footer>
+
+  <script>
+    const schedule = [];
+    const hourlyTimes = [
+      { start: "02", end: "03" },
+      { start: "08", end: "09" },
+      { start: "14", end: "15" },
+      { start: "20", end: "22" },
+      { start: "28", end: "30" },
+      { start: "38", end: "39" },
+      { start: "41", end: "41" },
+      { start: "55", end: "57" }
+    ];
+
+    for (let hour = 0; hour < 24; hour++) {
+      const hourStr = hour.toString().padStart(2, '0');
+      hourlyTimes.forEach(t => {
+        schedule.push({
+          start: `${hourStr}:${t.start}`,
+          end: `${hourStr}:${t.end}`
+        });
+      });
+    }
+
+    const alertSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+
+    function updateNextSignal() {
+      const now = new Date();
+      const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+      let next = null;
+      for (let i = 0; i < schedule.length; i++) {
+        const [h, m] = schedule[i].start.split(":").map(Number);
+        const signalTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m);
+        if (signalTime > now) {
+          next = schedule[i];
+          break;
+        }
+      }
+
+      if (!next) {
+        next = schedule[0];
+      }
+
+      const [startHour, startMin] = next.start.split(':').map(Number);
+      const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMin);
+      if (startTime < now) startTime.setDate(startTime.getDate() + 1);
+
+      const displayString = `${next.start} / ${next.end}`;
+      const nextSignalElem = document.getElementById("next-signal");
+      const countdownElem = document.getElementById("countdown");
+
+      if (!window.lastSignalTime || window.lastSignalTime !== next.start) {
+        window.lastSignalTime = next.start;
+        nextSignalElem.textContent = "Next Signal Loading";
+        setTimeout(() => {
+          nextSignalElem.textContent = displayString;
+          alertSound.play().catch(e => console.log("Sound not played:", e));
+        }, 3000);
+      } else {
+        nextSignalElem.textContent = displayString;
+      }
+
+      const countdown = Math.max(0, Math.floor((startTime - now) / 1000));
+      const min = String(Math.floor(countdown / 60)).padStart(2, '0');
+      const sec = String(countdown % 60).padStart(2, '0');
+      countdownElem.textContent = `Next in: ${min}:${sec}`;
+    }
+
+    function updateLiveTimeAndDate() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('si-LK', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const dateStr = now.toLocaleDateString('si-LK', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+
+      document.getElementById("live-time").textContent = timeStr;
+      document.getElementById("live-date").textContent = dateStr;
+    }
+
+    setInterval(() => {
+      updateLiveTimeAndDate();
+      updateNextSignal();
+    }, 1000);
+
+    updateLiveTimeAndDate();
+    updateNextSignal();
+  </script>
+</body>
+</html>
