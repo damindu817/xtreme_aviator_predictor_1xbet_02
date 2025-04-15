@@ -182,7 +182,7 @@
 
       if (!window.lastSignalTime || window.lastSignalTime !== next.start) {
         window.lastSignalTime = next.start;
-        nextSignalElem.textContent = "Next Signal Loading";
+        nextSignalElem.textContent = "Next Signal Loading...";
         setTimeout(() => {
           nextSignalElem.textContent = displayString;
           alertSound.play().catch(e => console.log("Sound not played:", e));
